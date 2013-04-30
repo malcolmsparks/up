@@ -18,4 +18,6 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :plugins [[lein-localrepo "0.4.1"]]
-  :aliases {"install-local" ["localrepo" "install" ~(str "target/up-core-" version ".jar") "up/up-core" ~version]})
+  :aliases {"install-local" ["localrepo" "install" ~(str "target/up-core-" version ".jar") "up/up-core" ~version]}
+  :dependencies [[defemeral "0.1.0"]
+                 [lamina "0.5.0-beta15"]])

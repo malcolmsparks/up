@@ -16,7 +16,9 @@
   (eval/eval-in-project
    
    (update-in project [:dependencies]
-              concat [['up/up-core "0.0.1"]])
+              concat [['up/up-core "0.0.1"]
+                      ['defemeral "0.1.0"]
+                      ['lamina "0.5.0-beta15"]])
    `(do
      (require 'up.start)
      (up.start/init (quote ~project)))))

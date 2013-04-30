@@ -9,7 +9,21 @@
 ;; 
 ;; You must not remove this notice, or any other, from this software.
 
-(ns up.start)
+(ns up.start
+  (:require
+   [clojure.pprint :refer (pprint)]
+   [clojure.string :as string]
+   [defemeral.defemeral :refer (defemeral shutdown)]
+   [lamina.core :refer (channel enqueue filter* join map*) :as lamina]))
+
+(defn create-bus []
+  (lamina/channel* :permanent true
+                   :grounded? true
+                   :transactional? false
+                   :description "Host event bus"))
+
+(def bus (atom (create-bus)))
 
 (defn init [prj]
   (println "Up"))
+
