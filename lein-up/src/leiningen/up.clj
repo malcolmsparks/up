@@ -10,15 +10,14 @@
 ;; You must not remove this notice, or any other, from this software.
 
 (ns leiningen.up
-  (:use [leiningen.core.eval :as eval]))
+  (:require [clojure.pprint :refer (pprint)]
+          )
+  (:use [leiningen.core.eval :as eval]
+        [leiningen.core.classpath :as classpath]))
 
 (defn up [project & args]
   (eval/eval-in-project
-   
    (update-in project [:dependencies]
-              concat [['up/up-core "0.0.1"]
-                      ['defemeral "0.1.0"]
-                      ['lamina "0.5.0-beta15"]])
-   `(do
-     (require 'up.start)
-     (up.start/init (quote ~project)))))
+              concat [['up/up-core "0.0.1"]])
+   `(up.start/init (quote ~project))
+   '(require 'up.start)))
