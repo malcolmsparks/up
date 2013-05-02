@@ -54,9 +54,10 @@
             :let [plugin (first pentry)]]
       (let [{:keys [start stop]} (get-up-config-from-jar (-> plugin meta :file))]
         (require (symbol (.getNamespace start)))
-        (let [v (ns-resolve (symbol (.getNamespace start)) (symbol (.getName start)))]
-          (println "Starting plugin: " plugin)
-          (v (get-in prj [:up :plugins plugin]) @bus))))
+        (let [pi (ns-resolve (symbol (.getNamespace start)) (symbol (.getName start)))
+              pconf (get-in prj [:up :plugins plugin])]
+          (println "Starting plugin: " plugin "with config" pconf)
+          (pi pconf @bus))))
     
     ;; Enqueue test message
     (enqueue @bus "Plugins initialised")
