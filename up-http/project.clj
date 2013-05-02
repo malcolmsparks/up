@@ -13,7 +13,7 @@
 (def version (get-version))
 
 (defproject up/up-http version
-  :description "HTTP service for up"
+  :description "HTTP service for Up."
   :url "http://github.com/malcolmsparks/up"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

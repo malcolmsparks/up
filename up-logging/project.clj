@@ -13,7 +13,7 @@
 (def version (get-version))
 
 (defproject up/up-logging version
-  :description "Logging plugin for up"
+  :description "Logging plugin for Up."
   :url "http://github.com/malcolmsparks/up"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
