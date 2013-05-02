@@ -12,10 +12,12 @@
 (read "project.clj")
 (def version (get-version))
 
-(defproject up/up-core version
-  :description "Core infrastruture for Up."
+(defproject up/up-logging version
+  :description "Logging plugin for up"
   :url "http://github.com/malcolmsparks/up"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[lamina ~(:lamina versions)]
-                 [leiningen-core "2.1.0"]])
+                 [leiningen-core "2.1.0"]]
+  :up {:start up.logging/start
+       :stop up.logging/stop})

@@ -13,8 +13,10 @@
   (:require
    [clojure.pprint :refer (pprint)]
    [clojure.string :as string]
-   [defemeral.defemeral :refer (defemeral shutdown)]
-   [lamina.core :refer (channel enqueue filter* join map*) :as lamina]))
+   [clojure.walk :as walk]
+   [lamina.core :refer (channel enqueue filter* join map*) :as lamina]
+   [leiningen.core.classpath :as classpath]
+   ))
 
 (defn create-bus []
   (lamina/channel* :permanent true
@@ -24,6 +26,38 @@
 
 (def bus (atom (create-bus)))
 
-(defn init [prj]
-  (println "Up"))
+(defn forms [r]
+  (when-let [fm (read r false nil)]
+    (cons fm (lazy-seq (forms r)))))
 
+(defn get-up-config-from-jar [f]
+  (let [jar (java.util.jar.JarFile. f) 
+        je (.getEntry jar "project.clj")]
+    (let [r (java.io.PushbackReader. (java.io.InputStreamReader. (.getInputStream jar je)))]
+      (:up (apply hash-map (drop 3 (last (filter #(= (first %) 'defproject) (forms r) ))))))))
+
+(defn init [prj]
+  (println "Up")
+  (pprint "configuration>")
+  (pprint (:up prj))
+
+  (let [plugins (apply hash-set (-> prj :up :plugins keys))
+        prj+plugins (update-in prj [:dependencies]
+                               concat plugins)]
+
+    ;; Add to classpath
+    (classpath/resolve-dependencies :dependencies prj+plugins :add-classpath? true)
+
+    ;; Initialize plugins
+    (doseq [pentry (tree-seq coll? seq (classpath/dependency-hierarchy :dependencies prj+plugins))
+            :when (and (coll? pentry) (plugins (first pentry)))
+            :let [plugin (first pentry)]]
+      (let [{:keys [start stop]} (get-up-config-from-jar (-> plugin meta :file))]
+        (require (symbol (.getNamespace start)))
+        (let [v (ns-resolve (symbol (.getNamespace start)) (symbol (.getName start)))]
+          (println "Starting plugin: " plugin)
+          (v (get-in prj [:up :plugins plugin]) @bus))))
+    
+    ;; Enqueue test message
+    (enqueue @bus "Plugins initialised")
+    ))

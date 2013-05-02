@@ -19,5 +19,7 @@
   (eval/eval-in-project
    (update-in project [:dependencies]
               concat [['up/up-core "0.0.1"]])
-   `(up.start/init (quote ~project))
+   `(do
+      (up.start/init (quote ~project))
+      "Up, up and away!")
    '(require 'up.start)))

@@ -9,7 +9,7 @@
 ;; 
 ;; You must not remove this notice, or any other, from this software.
 
-(read "../project.clj")
+(read "project.clj")
 (def version (get-version))
 
 (defproject lein-up version
@@ -18,7 +18,6 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :eval-in-leiningen true
-  :plugins [[lein-localrepo "0.4.1"]]
   :dependencies [[up/up-core ~version]
-                 [org.clojure/clojure "1.5.1"]]
-  :aliases {"install-local" ["localrepo" "install" ~(str "target/lein-up-" version ".jar") "lein-up" ~version]})
+                 [org.clojure/clojure "1.5.1"]])
+

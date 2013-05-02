@@ -12,10 +12,17 @@
 (read "project.clj")
 (def version (get-version))
 
-(defproject up/up-core version
-  :description "Core infrastruture for Up."
+(defproject up/up-http version
+  :description "HTTP service for up"
   :url "http://github.com/malcolmsparks/up"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[lamina ~(:lamina versions)]
-                 [leiningen-core "2.1.0"]])
+                 [io.pedestal/pedestal.service ~(:pedestal versions)]
+                 [io.pedestal/pedestal.jetty ~(:pedestal versions)]
+                 [ch.qos.logback/logback-classic "1.0.7"]
+                 [org.slf4j/jul-to-slf4j "1.7.2"]
+                 [org.slf4j/jcl-over-slf4j "1.7.2"]
+                 [org.slf4j/log4j-over-slf4j "1.7.2"]]
+  :up {:start up.http/start
+       :stop up.http/stop})
