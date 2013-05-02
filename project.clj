@@ -38,4 +38,5 @@
   :sub ["up-core" 
         "up-logging" 
         "up-http" 
+        "up-nrepl" 
         "lein-up"])
