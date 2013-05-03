@@ -39,4 +39,5 @@
         "up-logging" 
         "up-http" 
         "up-nrepl" 
+        "up-pedestal-webapp" 
         "lein-up"])
