@@ -17,7 +17,7 @@
   :url "http://github.com/malcolmsparks/up"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[lamina ~(:lamina versions)]
+  :dependencies [[up/up-core ~version]
                  [io.pedestal/pedestal.service ~(:pedestal versions)]
                  [io.pedestal/pedestal.jetty ~(:pedestal versions)]
                  [ch.qos.logback/logback-classic "1.0.7"]
