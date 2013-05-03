@@ -53,8 +53,8 @@
             :when (and (coll? pentry) (plugins (first pentry)))
             :let [plugin (first pentry)]]
       (let [{:keys [start stop]} (get-up-config-from-jar (-> plugin meta :file))]
-        (require (symbol (.getNamespace start)))
-        (let [pi (ns-resolve (symbol (.getNamespace start)) (symbol (.getName start)))
+        (require (symbol (namespace start)))
+        (let [pi (ns-resolve (symbol (namespace start)) (symbol (name start)))
               pconf (get-in prj [:up :plugins plugin])]
           (println "Starting plugin: " plugin "with config" pconf)
           (pi pconf @bus))))
