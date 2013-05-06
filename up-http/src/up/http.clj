@@ -15,7 +15,8 @@
    [io.pedestal.service.interceptor :refer (defhandler)]
    [io.pedestal.service.impl.interceptor :refer (with-pause interceptor pause resume)]
    [io.pedestal.service.http.route.definition :refer (expand-routes)]
-   [io.pedestal.service.http :as bootstrap]))
+   [io.pedestal.service.http :as bootstrap])
+  (:import (up.start Plugin)))
 
 (defn create-routes [bus]
   (expand-routes
@@ -23,13 +24,15 @@
                              :enter (fn [ctx] 
                                       (enqueue bus {:type :http-request :context (pause ctx)})))}]]]))
 
-(defn start [options bus]
-  {:pre [(map? options) 
-         (number? (:port options))]}
-  (let [server
-        (bootstrap/create-server {:end :prod
-                                  ::bootstrap/routes (create-routes bus)
-                                  ::bootstrap/type :jetty
-                                  ::bootstrap/port (:port options)})]
-    [server (future (bootstrap/start server))]))
+(defrecord HttpService [pctx]
+  Plugin
+  (start [_]
+    {:pre [(map? (-> pctx :options)) 
+           (number? (-> pctx :options :port))]}
+    (let [server
+          (bootstrap/create-server {:end :prod
+                                    ::bootstrap/routes (create-routes (:bus pctx))
+                                    ::bootstrap/type :jetty
+                                    ::bootstrap/port (-> pctx :options :port)})]
+      [server (future (bootstrap/start server))])))
 

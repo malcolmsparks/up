@@ -24,5 +24,5 @@
                  [org.slf4j/jul-to-slf4j "1.7.2"]
                  [org.slf4j/jcl-over-slf4j "1.7.2"]
                  [org.slf4j/log4j-over-slf4j "1.7.2"]]
-  :up {:start up.http/start
-       :stop up.http/stop})
+  :up {:plugin up.http/HttpService})
+

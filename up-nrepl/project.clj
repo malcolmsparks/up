@@ -20,5 +20,4 @@
   :dependencies [[up/up-core ~version]
                  [org.clojure/tools.nrepl "0.2.2"]
                  ]
-  :up {:start up.nrepl/start
-       :stop up.nrepl/stop})
+  :up {:plugin up.nrepl/NReplService})

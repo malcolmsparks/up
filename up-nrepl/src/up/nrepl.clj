@@ -11,11 +11,14 @@
 
 (ns up.nrepl
   (:require
-   [clojure.tools.nrepl.server :refer (start-server stop-server default-handler)]))
+   [clojure.tools.nrepl.server :refer (start-server stop-server default-handler)])
+  (:import (up.start Plugin)))
 
-(defn start [{:keys [port]} bus]
-  {:pre [(number? port)]}
-  (start-server
-   :host "127.0.0.1"
-   :port  port
-   :handler (default-handler)))
+(defrecord NReplService [pctx]
+  Plugin
+  (start [_]
+    {:pre [(number? (-> pctx :options :port))]}
+    (start-server
+     :host "127.0.0.1"
+     :port (-> pctx :options :port)
+     :handler (default-handler))))

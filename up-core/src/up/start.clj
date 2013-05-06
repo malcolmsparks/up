@@ -36,6 +36,10 @@
     (let [r (java.io.PushbackReader. (java.io.InputStreamReader. (.getInputStream jar je)))]
       (:up (apply hash-map (drop 3 (last (filter #(= (first %) 'defproject) (forms r) ))))))))
 
+(defprotocol Plugin
+  (start [_])
+  (stop [_ started]))
+
 (defn init [prj]
   (println "Up")
   (pprint "configuration>")
@@ -51,14 +55,20 @@
     ;; Initialize plugins
     (doseq [pentry (tree-seq coll? seq (classpath/dependency-hierarchy :dependencies prj+plugins))
             :when (and (coll? pentry) (plugins (first pentry)))
-            :let [plugin (first pentry)]]
-      (let [{:keys [start stop]} (get-up-config-from-jar (-> plugin meta :file))]
-        (require (symbol (namespace start)))
-        (let [pi (ns-resolve (symbol (namespace start)) (symbol (name start)))
-              pconf (get-in prj [:up :plugins plugin])]
-          (println "Starting plugin: " plugin "with config" pconf)
-          (pi pconf @bus))))
+            :let [pdef (first pentry)]]
+      (let [{:keys [plugin]} (get-up-config-from-jar (-> pdef meta :file))]
+        (when plugin
+          (require (symbol (namespace plugin)))
+          (let [pconf (get-in prj [:up :plugins pdef])
+                pctx {:options pconf :bus @bus}
+                rec (ns-resolve (symbol (namespace plugin)) (symbol (name plugin)))]
+            (when (nil? rec) (throw (Exception. (format "Cannot find plugin: %s" plugin))))
+            (let [ctr (.getConstructor rec 
+                                       (into-array Class [Object]))]
+              (when (nil? ctr) (throw (Exception. (format "Plugin must have a single-arg constructor: %s" plugin))))
+              (let [inst (.newInstance ctr (into-array [pctx]))]
+                (println "Starting plugin: " plugin "with config" pconf)
+                (start inst)))))))
     
     ;; Enqueue test message
-    (enqueue @bus "Plugins initialised")
-    ))
+    (enqueue @bus "Plugins initialised")))

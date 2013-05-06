@@ -18,5 +18,5 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[up/up-core ~version]]
-  :up {:start up.logging/start
-       :stop up.logging/stop})
+  :up {:plugin up.logging/Logging})
+

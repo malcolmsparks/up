@@ -19,5 +19,4 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[up/up-core ~version]
                  [ojo "1.1.0"]]
-  :up {:start up.watch/start
-       :stop up.watch/stop})
+  :up {:plugin up.watch/FileWatcher})
