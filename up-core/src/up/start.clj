@@ -72,3 +72,4 @@
     
     ;; Enqueue test message
     (enqueue @bus "Plugins initialised")))
+

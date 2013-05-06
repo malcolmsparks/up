@@ -41,5 +41,6 @@
         "up-nrepl"
         "up-pedestal-webapp"
         "up-watch"
+        "up-stencil"
         "lein-up"
 ])

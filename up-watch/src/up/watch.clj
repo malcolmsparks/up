@@ -16,7 +16,7 @@
           (create-watch patterns
                         [:create :modify :delete]
                         :respond (response
-                                  (enqueue bus {:up/origin *ns*
+                                  (enqueue bus {:up/event :up.watch/file-event
                                                 :events *events*
                                                 :state *state*
                                                 :settings *settings*})))]
