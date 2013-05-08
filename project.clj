@@ -42,5 +42,6 @@
         "up-pedestal-webapp"
         "up-watch"
         "up-stencil"
+        "up-firefox-reload"
         "lein-up"
 ])
