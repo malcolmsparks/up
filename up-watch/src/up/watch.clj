@@ -18,6 +18,9 @@
    [lamina.core :refer (enqueue) :as lamina])
   (:import (up.start Plugin)))
 
+(defn emacs-tmpfile? [n]
+  (re-matches #"(?:.*/)?\.?#.*" n))
+
 (defrecord FileWatcher [pctx]
   Plugin
   (start [_]
@@ -27,8 +30,10 @@
           (create-watch patterns
                         [:create :modify :delete]
                         :respond (response
-                                  (enqueue bus {:up/event :up.watch/file-event
-                                                :events *events*
-                                                :state *state*
-                                                :settings *settings*})))]
+                                  (doseq [ev *events*
+                                          :when ((comp not emacs-tmpfile? :file) ev)]
+                                    (enqueue bus {:up/event :up.watch/file-event
+                                                  :event ev
+                                                  :state *state*
+                                                  :settings *settings*}))))]
       (future (start-watch watch)))))

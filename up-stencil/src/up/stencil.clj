@@ -25,10 +25,8 @@
   (start [_]
     (let [bus (-> pctx :bus)]
       (set-cache (soft-cache-factory {}))
-      (receive-all (->> bus 
-                        (filter* (comp (partial = :up.watch/file-event) :up/event))
-                        (map* #(update-in % [:events] (fn [evs] (vec (filter (comp not emacs-tmpfile? :file) evs)))))
-                        (filter* (comp not empty? :events)))
-                   (fn [ev] 
+      (receive-all (->> bus
+                        (filter* (comp (partial = :up.watch/file-event) :up/event)))
+                   (fn [ev]
                      (println "invalidating cache due to file event")
                      (invalidate-cache))))))
