@@ -18,4 +18,5 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[lamina ~(:lamina versions)]
+                 [jkkramer/loom "0.2.0"]
                  [leiningen-core "2.1.0"]])

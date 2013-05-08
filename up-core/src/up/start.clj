@@ -16,7 +16,10 @@
    [clojure.walk :as walk]
    [lamina.core :refer (channel enqueue filter* join map*) :as lamina]
    [leiningen.core.classpath :as classpath]
-   ))
+   [loom
+    [graph :refer (graph)]
+    [io :refer (view) :rename {view view-graph}]
+    [alg :refer (pre-traverse)]]))
 
 (defn create-bus []
   (lamina/channel* :permanent true
@@ -45,17 +48,34 @@
   (pprint "configuration>")
   (pprint (:up prj))
 
-  (let [plugins (apply hash-set (-> prj :up :plugins keys))
+  (let [plugins (set (-> prj :up :plugins keys))
         prj+plugins (update-in prj [:dependencies]
                                concat plugins)]
 
     ;; Add to classpath
     (classpath/resolve-dependencies :dependencies prj+plugins :add-classpath? true)
 
+    ;; This code used to use classpath/dependency-hierarchy over the
+    ;; whole dependency set. Unfortunately, transitive dependency paths
+    ;; are eliminated such that there is only one path per leaf. This is
+    ;; fine for Leiningen, because it's trying to build a
+    ;; classpath. However, this method is not adequte for finding all
+    ;; the transitive paths since some dependency relationships between
+    ;; plugins are dropped and the consequence is that plugins are
+    ;; loaded in the wrong order. Therefore we need to call
+    ;; classpath/dependency-hierarchy on each individual plugin, and use
+    ;; loom to give us the dependency order.
+
     ;; Initialize plugins
-    (doseq [pentry (tree-seq coll? seq (classpath/dependency-hierarchy :dependencies prj+plugins))
-            :when (and (coll? pentry) (plugins (first pentry)))
-            :let [pdef (first pentry)]]
+    (println "Initialising plugins")
+    (doseq [pdef
+            (->> (for [pg plugins
+                       [k1 v] (classpath/dependency-hierarchy :dependencies {:dependencies [pg]})
+                       k2 (keys v)]
+                   [k1 k2])
+                 (apply graph)
+                 pre-traverse
+                 (filter (set plugins)))]
       (let [{:keys [plugin]} (get-up-config-from-jar (-> pdef meta :file))]
         (when plugin
           (require (symbol (namespace plugin)))
