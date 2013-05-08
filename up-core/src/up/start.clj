@@ -1,12 +1,12 @@
 ;; Copyright © 2013, Malcolm Sparks. All Rights Reserved.
 ;;
 ;; The use and distribution terms for this software are covered by the
-;; Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php) 
-;; which can be found in the file epl-v10.html at the root of this distribution.  
+;; Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+;; which can be found in the file epl-v10.html at the root of this distribution.
 ;;
 ;; By using this software in any fashion, you are agreeing to be bound by the
 ;; terms of this license.
-;; 
+;;
 ;; You must not remove this notice, or any other, from this software.
 
 (ns up.start
@@ -31,7 +31,7 @@
     (cons fm (lazy-seq (forms r)))))
 
 (defn get-up-config-from-jar [f]
-  (let [jar (java.util.jar.JarFile. f) 
+  (let [jar (java.util.jar.JarFile. f)
         je (.getEntry jar "project.clj")]
     (let [r (java.io.PushbackReader. (java.io.InputStreamReader. (.getInputStream jar je)))]
       (:up (apply hash-map (drop 3 (last (filter #(= (first %) 'defproject) (forms r) ))))))))
@@ -63,13 +63,12 @@
                 pctx {:options pconf :bus @bus}
                 rec (ns-resolve (symbol (namespace plugin)) (symbol (name plugin)))]
             (when (nil? rec) (throw (Exception. (format "Cannot find plugin: %s" plugin))))
-            (let [ctr (.getConstructor rec 
+            (let [ctr (.getConstructor rec
                                        (into-array Class [Object]))]
               (when (nil? ctr) (throw (Exception. (format "Plugin must have a single-arg constructor: %s" plugin))))
               (let [inst (.newInstance ctr (into-array [pctx]))]
                 (println "Starting plugin: " plugin "with config" pconf)
                 (start inst)))))))
-    
+
     ;; Enqueue test message
     (enqueue @bus "Plugins initialised")))
-
