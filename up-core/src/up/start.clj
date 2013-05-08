@@ -67,7 +67,7 @@
     ;; loom to give us the dependency order.
 
     ;; Initialize plugins
-    (println "Initialising plugins")
+    (println "Initializing plugins")
     (doseq [pdef
             (->> (for [pg plugins
                        [k1 v] (classpath/dependency-hierarchy :dependencies {:dependencies [pg]})
