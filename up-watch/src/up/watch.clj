@@ -32,7 +32,7 @@
                         :respond (response
                                   (doseq [ev *events*
                                           :when ((comp not emacs-tmpfile? :file) ev)]
-                                    (enqueue bus {:up/event :up.watch/file-event
+                                    (enqueue bus {:up/topic :up.watch/file-event
                                                   :event ev
                                                   :state *state*
                                                   :settings *settings*}))))]

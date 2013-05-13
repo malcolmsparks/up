@@ -47,7 +47,7 @@
           firefox (agent (:options pctx)
                          :error-mode :continue
                          :validate-fn map?)]
-      (receive-all (filter* (comp (partial = :up.watch/file-event) :up/event) bus)
+      (receive-all (filter* (comp (partial = :up.watch/file-event) :up/topic) bus)
                    (fn [_]
                      (println "Reloading firefox")
                      (send-off firefox reload))))))

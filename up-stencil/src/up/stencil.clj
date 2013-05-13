@@ -26,7 +26,7 @@
     (let [bus (-> pctx :bus)]
       (set-cache (soft-cache-factory {}))
       (receive-all (->> bus
-                        (filter* (comp (partial = :up.watch/file-event) :up/event)))
+                        (filter* (comp (partial = :up.watch/file-event) :up/topic)))
                    (fn [ev]
                      (println "invalidating cache due to file event")
                      (invalidate-cache))))))

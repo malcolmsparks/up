@@ -91,4 +91,17 @@
                 (start inst)))))))
 
     ;; Enqueue test message
-    (enqueue @bus "Plugins initialised")))
+    (enqueue @bus "Plugins initialized"))
+
+  (let [plugin (-> prj :up :plugin)
+        pctx {:bus @bus}
+        rec (ns-resolve (symbol (namespace plugin)) (symbol (name plugin)))]
+    (when (nil? rec) (throw (Exception. (format "Cannot find plugin: %s" plugin))))
+    (let [ctr (.getConstructor rec
+                               (into-array Class [Object]))]
+      (when (nil? ctr) (throw (Exception. (format "Plugin must have a single-arg constructor: %s" plugin))))
+      (let [inst (.newInstance ctr (into-array [pctx]))]
+        (println "Starting plugin: " plugin)
+        (start inst))))
+
+  (println "Application initialized"))
