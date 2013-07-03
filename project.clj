@@ -46,6 +46,9 @@
             (let [[[_ stem lst]] (re-seq #"(.*\.)(.*)" tag)]
               (join [stem (inc (read-string lst)) "-" "SNAPSHOT"])))))))
 
+(def versions {:lamina "0.5.0-beta15"
+               :pedestal "0.1.2"})
+
 (defproject up/up (get-version)
   :description "Up - A Clojure development and deployment system."
   :url "http://github.com/malcolmsparks/up"

@@ -25,15 +25,16 @@
   Plugin
   (start [_]
     (let [bus (-> pctx :bus)
-          patterns (-> pctx :options :patterns)
-          watch
-          (create-watch patterns
-                        [:create :modify :delete]
-                        :respond (response
-                                  (doseq [ev *events*
-                                          :when ((comp not emacs-tmpfile? :file) ev)]
-                                    (enqueue bus {:up/topic :up.watch/file-event
-                                                  :event ev
-                                                  :state *state*
-                                                  :settings *settings*}))))]
-      (future (start-watch watch)))))
+          watches (-> pctx :options :watches)]
+      (doseq [{:keys [topic patterns]} watches]
+        (let [watch
+              (create-watch patterns
+                            [:create :modify :delete]
+                            :respond (response
+                                      (doseq [ev *events*
+                                              :when ((comp not emacs-tmpfile? :file) ev)]
+                                        (enqueue bus {:up/topic topic
+                                                      :event ev
+                                                      :state *state*
+                                                      :settings *settings*}))))]
+          (future (start-watch watch)))))))

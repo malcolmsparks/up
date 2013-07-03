@@ -38,7 +38,7 @@
            (number? (-> pctx :options :port))]}
     (let [{:keys [bus]} pctx
           server
-          (bootstrap/create-server {:end :prod
+          (bootstrap/create-server {:env :prod
                                     ::bootstrap/routes (fn [] @expanded-routes)
                                     ::bootstrap/type :jetty
                                     ::bootstrap/port (-> pctx :options :port)})]

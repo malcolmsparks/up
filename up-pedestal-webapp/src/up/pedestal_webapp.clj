@@ -14,5 +14,4 @@
         (receive-all (->> bus
                           (filter* (comp (partial = :up.http/request) :up/topic)))
                      (fn [{:keys [context]}]
-                       (println "context is " context)
                        (resume (assoc context :response (h (:request context))))))))))
