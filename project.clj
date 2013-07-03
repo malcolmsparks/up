@@ -13,21 +13,38 @@
                    [edn :as edn])
          '(clojure.java [shell :refer (sh)]))
 
+
+(defn head-ok []
+  (-> (sh "git" "rev-parse" "--verify" "HEAD")
+      :exit zero?))
+
+(defn refresh-index []
+  (sh "git" "update-index" "-q" "--ignore-submodules" "--refresh")
+)
+
+(defn unstaged-changes []
+  (-> (sh "git" "diff-files" "--quiet" "--ignore-submodules")
+      :exit zero? not))
+
+(defn uncommitted-changes []
+  (-> (sh "git" "diff-index" "--cached" "--quiet" "--ignore-submodules" "HEAD" "--")
+      :exit zero? not))
+
 ;; We don't want to keep having to 'bump' the version when we are
 ;; sitting on a more capable versioning system: git.
-(def get-version
-  (memoize
-   (fn []
-     (let [{:keys [exit out err]} (sh "git" "describe" "--tags" "--long")]
-       (if (= 128 exit) "0.0.1"
-           (let [[[_ tag commits hash]] (re-seq #"(.*)-(.*)-(.*)" out)]
-             (if (zero? (edn/read-string commits))
-               tag
-               (let [[[_ stem lst]] (re-seq #"(.*\.)(.*)" tag)]
-                 (join [stem (inc (read-string lst)) "-" "SNAPSHOT"])))))))))
-
-(def versions {:lamina "0.5.0-beta15"
-               :pedestal "0.1.2"})
+(defn get-version []
+  (when (not (head-ok)) (throw (ex-info "HEAD not valid" {})))
+  (refresh-index)
+  (let [{:keys [exit out err]} (sh "git" "describe" "--tags" "--long")]
+    (if (= 128 exit) "0.0.1"
+        (let [[[_ tag commits hash]] (re-seq #"(.*)-(.*)-(.*)" out)]
+          (if (and
+               (zero? (edn/read-string commits))
+               (not (unstaged-changes))
+               (not (uncommitted-changes)))
+            tag
+            (let [[[_ stem lst]] (re-seq #"(.*\.)(.*)" tag)]
+              (join [stem (inc (read-string lst)) "-" "SNAPSHOT"])))))))
 
 (defproject up/up (get-version)
   :description "Up - A Clojure development and deployment system."
