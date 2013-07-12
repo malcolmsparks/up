@@ -44,10 +44,12 @@
   Plugin
   (start [_]
     (let [bus (-> pctx :bus)
+          topics (set (-> pctx :options :topics))
+          _ (println "topics is " topics)
           firefox (agent (:options pctx)
                          :error-mode :continue
                          :validate-fn map?)]
-      (receive-all (filter* (comp (partial = :up.watch/file-event) :up/topic) bus)
+      (receive-all (filter* (comp (partial contains? topics) :up/topic) bus)
                    (fn [_]
                      (println "Reloading firefox")
                      (send-off firefox reload))))))

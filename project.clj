@@ -46,6 +46,7 @@
             (let [[[_ stem lst]] (re-seq #"(.*\.)(.*)" tag)]
               (join [stem (inc (read-string lst)) "-" "SNAPSHOT"])))))))
 
+;; TODO: Update these - or use lein-ancient
 (def versions {:lamina "0.5.0-beta15"
                :pedestal "0.1.2"})
 

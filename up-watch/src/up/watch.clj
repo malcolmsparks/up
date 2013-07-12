@@ -11,12 +11,11 @@
 
 (ns up.watch
   (:require
-   [ojo
-    [watch :refer (defwatch start-watch)]
-    [impl :refer (create-watch)]
-    [respond :refer (response)]]
-   [lamina.core :refer (enqueue) :as lamina])
-  (:import (up.start Plugin)))
+   [lamina.core :refer (enqueue) :as lamina]
+   [pro.juxt.dirwatch :refer (watch-dir close-watcher)]
+   [clojure.java.io :refer (file)])
+  (:import
+   (up.start Plugin)))
 
 (defn emacs-tmpfile? [n]
   (re-matches #"(?:.*/)?\.?#.*" n))
@@ -26,15 +25,16 @@
   (start [_]
     (let [bus (-> pctx :bus)
           watches (-> pctx :options :watches)]
-      (doseq [{:keys [topic patterns]} watches]
-        (let [watch
-              (create-watch patterns
-                            [:create :modify :delete]
-                            :respond (response
-                                      (doseq [ev *events*
-                                              :when ((comp not emacs-tmpfile? :file) ev)]
-                                        (enqueue bus {:up/topic topic
-                                                      :event ev
-                                                      :state *state*
-                                                      :settings *settings*}))))]
-          (future (start-watch watch)))))))
+      (doall
+       (for [{:keys [topic dir] :as args} watches]
+         (let [dir (file dir)]
+           (if-not (and dir
+                        (.exists dir)
+                        (.isDirectory dir))
+             (throw (ex-info "Directory does not exist" {:dir dir}))
+             (watch-dir #(when-not (emacs-tmpfile? (str (:file %)))
+                           (enqueue bus {:up/topic topic
+                                         :event %}))
+                        dir)))))))
+  (stop [_ watchers]
+    (doseq [w watchers] (close-watcher w))))

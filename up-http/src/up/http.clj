@@ -20,14 +20,7 @@
 
 (def routes (atom []))
 
-(def expanded-routes (atom (expand-routes @routes)))
-
-(add-watch routes
-           :expander (fn [_ _ _ new]
-                       (dosync
-                        (reset! expanded-routes (expand-routes new)))))
-
-(defn add-webapp [{rts :routes}]
+(defn add-webapp [{rts :routes }]
   (dosync
    (swap! routes conj rts)))
 
@@ -38,8 +31,11 @@
            (number? (-> pctx :options :port))]}
     (let [{:keys [bus]} pctx
           server
-          (bootstrap/create-server {:env :prod
-                                    ::bootstrap/routes (fn [] @expanded-routes)
+          (bootstrap/create-server {:env :dev
+                                    ;; This is for dev, in prod just expand routes once
+                                    ::bootstrap/routes (fn [] (expand-routes (mapcat #(apply % []) (deref routes))))
+
+;;(expand-routes (mapcat apply @routesfns))
                                     ::bootstrap/type :jetty
                                     ::bootstrap/port (-> pctx :options :port)})]
       (receive-all (->> bus

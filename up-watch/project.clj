@@ -18,5 +18,5 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[up/up-core ~version]
-                 [ojo "1.1.0"]]
+                 [pro.juxt/dirwatch "0.1.0"]]
   :up {:plugin up.watch/FileWatcher})
