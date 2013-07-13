@@ -19,4 +19,4 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[up/up-core ~version]
                  [stencil "0.3.2"]]
-  :up {:plugin up.stencil/TemplateService})
+  :up {:component up.stencil/TemplateService})

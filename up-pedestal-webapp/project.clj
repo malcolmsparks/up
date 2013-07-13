@@ -20,4 +20,4 @@
   :dependencies [[up/up-core ~version]
                  [up/up-http ~version]
                  ]
-  :up {:plugin up.pedestal-webapp/PedestalWebapp})
+  :up {:component up.pedestal-webapp/PedestalWebapp})

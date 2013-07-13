@@ -20,4 +20,4 @@
   :dependencies [[up/up-core ~version]
                  [up/up-watch ~version]]
 
-  :up {:plugin up.firefox-reload/FirefoxReloadService})
+  :up {:component up.firefox-reload/FirefoxReloadService})

@@ -13,10 +13,10 @@
 (def version (get-version))
 
 (defproject up/up-watch version
-  :description "Watch plugin for Up that uses Ojo to watches the file system and place file events on the bus."
+  :description "Watch component that watches the file system and place file events on the bus."
   :url "http://github.com/malcolmsparks/up"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[up/up-core ~version]
                  [pro.juxt/dirwatch "0.1.0"]]
-  :up {:plugin up.watch/FileWatcher})
+  :up {:component up.watch/FileWatcher})

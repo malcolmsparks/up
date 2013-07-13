@@ -45,15 +45,15 @@
 
 (defn init [prj]
   (println "Up")
-  (pprint "configuration>")
+  (print "Configuration :-")
   (pprint (:up prj))
 
-  (let [plugins (set (-> prj :up :plugins keys))
-        prj+plugins (update-in prj [:dependencies]
-                               concat plugins)]
+  (let [components (set (-> prj :up :components keys))
+        prj+components (update-in prj [:dependencies]
+                               concat components)]
 
     ;; Add to classpath
-    (classpath/resolve-dependencies :dependencies prj+plugins :add-classpath? true)
+    (classpath/resolve-dependencies :dependencies prj+components :add-classpath? true)
 
     ;; This code used to use classpath/dependency-hierarchy over the
     ;; whole dependency set. Unfortunately, transitive dependency paths
@@ -61,47 +61,49 @@
     ;; fine for Leiningen, because it's trying to build a
     ;; classpath. However, this method is not adequte for finding all
     ;; the transitive paths since some dependency relationships between
-    ;; plugins are dropped and the consequence is that plugins are
+    ;; components are dropped and the consequence is that components are
     ;; loaded in the wrong order. Therefore we need to call
-    ;; classpath/dependency-hierarchy on each individual plugin, and use
+    ;; classpath/dependency-hierarchy on each individual component, and use
     ;; loom to give us the dependency order.
 
-    ;; Initialize plugins
-    (println "Initializing plugins")
+    ;; Initialize components
+    (println "Initializing components: " components)
     (doseq [pdef
-            (->> (for [pg plugins
+            (->> (for [pg components
                        [k1 v] (classpath/dependency-hierarchy :dependencies {:dependencies [pg]})
                        k2 (keys v)]
                    [k1 k2])
                  (apply graph)
                  pre-traverse
-                 (filter (set plugins)))]
-      (let [{:keys [plugin]} (get-up-config-from-jar (-> pdef meta :file))]
-        (when plugin
-          (require (symbol (namespace plugin)))
-          (let [pconf (get-in prj [:up :plugins pdef])
+                 (filter (set components)))]
+      (let [{:keys [component]} (get-up-config-from-jar (-> pdef meta :file))]
+        (when component
+          (require (symbol (namespace component)))
+          (let [pconf (get-in prj [:up :components pdef])
                 pctx {:options pconf :bus @bus}
-                rec (ns-resolve (symbol (namespace plugin)) (symbol (name plugin)))]
-            (when (nil? rec) (throw (Exception. (format "Cannot find plugin: %s" plugin))))
+                rec (ns-resolve (symbol (namespace component)) (symbol (name component)))]
+            (when (nil? rec) (throw (Exception. (format "Cannot find component: %s" component))))
             (let [ctr (.getConstructor rec
                                        (into-array Class [Object]))]
-              (when (nil? ctr) (throw (Exception. (format "Plugin must have a single-arg constructor: %s" plugin))))
+              (when (nil? ctr) (throw (Exception. (format "Component must have a single-arg constructor: %s" component))))
               (let [inst (.newInstance ctr (into-array [pctx]))]
-                (println "Starting plugin: " plugin "with config" pconf)
+                (println "Starting component: " component "with config" pconf)
                 (start inst)))))))
 
     ;; Enqueue test message
-    (enqueue @bus "Plugins initialized"))
+    (enqueue @bus "Components initialized"))
 
-  (let [plugin (-> prj :up :component)
-        pctx {:bus @bus}
-        rec (ns-resolve (symbol (namespace plugin)) (symbol (name plugin)))]
-    (when (nil? rec) (throw (Exception. (format "Cannot find plugin: %s" plugin))))
-    (let [ctr (.getConstructor rec
-                               (into-array Class [Object]))]
-      (when (nil? ctr) (throw (Exception. (format "Plugin must have a single-arg constructor: %s" plugin))))
-      (let [inst (.newInstance ctr (into-array [pctx]))]
-        (println "Starting plugin: " plugin)
-        (start inst))))
+  (let [component (-> prj :up :component)]
+    (when component
+      (require (symbol (namespace component)))
+      (let [pctx {:bus @bus}
+            rec (ns-resolve (symbol (namespace component)) (symbol (name component)))]
+        (when (nil? rec) (throw (Exception. (format "Cannot find component: %s" component))))
+        (let [ctr (.getConstructor rec
+                                   (into-array Class [Object]))]
+          (when (nil? ctr) (throw (Exception. (format "Component must have a single-arg constructor: %s" component))))
+          (let [inst (.newInstance ctr (into-array [pctx]))]
+            (println "Starting component: " component)
+            (start inst))))))
 
   (println "Application initialized"))

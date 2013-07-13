@@ -1,4 +1,4 @@
-To use this plugin you first need to install a Firefox add-on available here: https://addons.mozilla.org/en-US/firefox/addon/remote-control/
+To use this component you first need to install a Firefox add-on available here: https://addons.mozilla.org/en-US/firefox/addon/remote-control/
 
 ## Credits
 

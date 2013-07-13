@@ -13,10 +13,10 @@
 (def version (get-version))
 
 (defproject up/up-logging version
-  :description "Logging plugin for Up."
+  :description "Logging component for Up."
   :url "http://github.com/malcolmsparks/up"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[up/up-core ~version]
                  [com.taoensso/timbre "2.1.2"]]
-  :up {:plugin up.logging/Logging})
+  :up {:component up.logging/Logging})
