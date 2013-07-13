@@ -39,7 +39,7 @@
     (let [r (java.io.PushbackReader. (java.io.InputStreamReader. (.getInputStream jar je)))]
       (:up (apply hash-map (drop 3 (last (filter #(= (first %) 'defproject) (forms r) ))))))))
 
-(defprotocol Plugin
+(defprotocol Lifecycle
   (start [_])
   (stop [_ started]))
 

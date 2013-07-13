@@ -15,13 +15,13 @@
    [pro.juxt.dirwatch :refer (watch-dir close-watcher)]
    [clojure.java.io :refer (file)])
   (:import
-   (up.start Plugin)))
+   (up.start Lifecycle)))
 
 (defn emacs-tmpfile? [n]
   (re-matches #"(?:.*/)?\.?#.*" n))
 
 (defrecord FileWatcher [pctx]
-  Plugin
+  Lifecycle
   (start [_]
     (let [bus (-> pctx :bus)
           watches (-> pctx :options :watches)]

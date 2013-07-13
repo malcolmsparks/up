@@ -15,7 +15,7 @@
    [clojure.java.io :refer (file)]
    [lamina.core :refer (receive-all filter* map*)])
   (:import
-   (up.start Plugin)
+   (up.start Lifecycle)
    (java.net Socket)))
 
 (defn reload
@@ -41,7 +41,7 @@
             (dissoc state :sock)))))))
 
 (defrecord FirefoxReloadService [pctx]
-  Plugin
+  Lifecycle
   (start [_]
     (let [bus (-> pctx :bus)
           topics (set (-> pctx :options :topics))

@@ -2,10 +2,10 @@
   (:require
    [lamina.core :refer (receive-all filter*)]
    [io.pedestal.service.impl.interceptor :refer (resume)])
-  (:import (up.start Plugin)))
+  (:import (up.start Lifecycle)))
 
 (defrecord PedestalWebapp [pctx]
-  Plugin
+  Lifecycle
   (start [_]
     (let [bus (-> pctx :bus)
           handler (-> pctx :options :handler)]

@@ -16,7 +16,7 @@
    [io.pedestal.service.impl.interceptor :refer (with-pause interceptor pause resume)]
    [io.pedestal.service.http.route.definition :refer (expand-routes)]
    [io.pedestal.service.http :as bootstrap])
-  (:import (up.start Plugin)))
+  (:import (up.start Lifecycle)))
 
 (def routes (atom []))
 
@@ -25,7 +25,7 @@
    (swap! routes conj rts)))
 
 (defrecord HttpService [pctx]
-  Plugin
+  Lifecycle
   (start [_]
     {:pre [(map? (-> pctx :options))
            (number? (-> pctx :options :port))]}

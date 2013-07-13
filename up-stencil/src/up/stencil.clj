@@ -15,13 +15,13 @@
    [clojure.core.cache :refer (soft-cache-factory)]
    [stencil.loader :refer (set-cache register-template invalidate-cache)]
    [lamina.core :refer (receive-all filter* map*)])
-  (:import (up.start Plugin)))
+  (:import (up.start Lifecycle)))
 
 (defn emacs-tmpfile? [n]
   (re-matches #"(?:.*/)?\.?#.*" n))
 
 (defrecord TemplateService [pctx]
-  Plugin
+  Lifecycle
   (start [_]
     (let [bus (-> pctx :bus)]
       (set-cache (soft-cache-factory {}))

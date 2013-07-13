@@ -2,7 +2,7 @@
   (:require
    [lamina.core :refer (channel* join close receive-all) :as lamina]
    [taoensso.timbre :as timbre :refer (trace debug info warn error fatal spy)])
-  (:import (up.start Plugin)))
+  (:import (up.start Lifecycle)))
 
 (def log (channel* :grounded? true))
 
@@ -10,7 +10,7 @@
   (debug (if-let [mt (meta ev)] (format "[meta: %s]" (str mt)) "") ev))
 
 (defrecord Logging [pctx]
-  Plugin
+  Lifecycle
   (start [_]
     (println "logging start")
     (join (:bus pctx) log)
