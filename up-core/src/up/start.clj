@@ -93,7 +93,7 @@
     ;; Enqueue test message
     (enqueue @bus "Plugins initialized"))
 
-  (let [plugin (-> prj :up :plugin)
+  (let [plugin (-> prj :up :component)
         pctx {:bus @bus}
         rec (ns-resolve (symbol (namespace plugin)) (symbol (name plugin)))]
     (when (nil? rec) (throw (Exception. (format "Cannot find plugin: %s" plugin))))
